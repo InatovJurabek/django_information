@@ -1,142 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bloomberg.uz</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-      color: #333;
-    }
-    header {
-      background-color: #222;
-      color: #fff;
-      padding: 20px 30px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: #fff;
-    }
-    .header-text {
-      text-align: right;
-    }
-    nav {
-      background-color: #444;
-      text-align: center;
-      padding: 10px 0;
-    }
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      margin: 0 15px;
-      font-weight: bold;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      padding: 20px;
-    }
-    .headline {
-      background-color: #fff;
-      padding: 20px;
-      border-left: 5px solid #007BFF;
-      margin-bottom: 20px;
-    }
-    .headline h2 {
-      margin-top: 0;
-    }
-    .news-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-    .news-card {
-      background-color: #fff;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .news-card h3 {
-      margin-top: 0;
-      font-size: 18px;
-      color: #007BFF;
-    }
-    .news-card p {
-      font-size: 14px;
-    }
-    footer {
-      background-color: #222;
-      color: #fff;
-      text-align: center;
-      padding: 15px 0;
-      margin-top: 40px;
-    }
-  </style>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %} - Bosh sahifa{% endblock title %}
+{% block content %}
+<!-- Main content -->
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Main Articles -->
+            <div class="col-md-8">
+                {% if latest_news %}
+                <h2>So'ngi yangiliklar</h2>
+                {% for item in latest_news %}
+                <div class="card mb-4">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ item.image.url }}" class="img-fluid rounded-start"
+                                alt="{{ news.title }}">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item.title }}</h5>
+                                <p class="card-text">{{ item.content|truncatechars:100 }}</p>
+                                <a href="{% url 'news_detail' item.id %}" class="btn btn-primary">Batafsil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
 
-  <header>
-    <div class="logo">bloomberg.uz</div>
-    <div class="header-text">
-      <h1 style="margin: 0; font-size: 20px;">Uzbekistan and World news</h1>
-      <p style="margin: 0; font-size: 14px;">Daily news</p>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-md-4">
+                <h4>Categories</h4>
+                <ul class="list-group mb-4">
+                    {% for category in categories %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ category.name }}
+                        <span class="badge bg-primary rounded-pill">{{ category.news.count }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <h4>Trending</h4>
+                <ul class="list-group">
+                    <li class="list-group-item"><a href="article.html">Top Story of the Day</a></li>
+                    <li class="list-group-item"><a href="article.html">Celebrity Interview</a></li>
+                    <li class="list-group-item"><a href="article.html">Market Update</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
-  </header>
-
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">World</a>
-    <a href="#">Politics</a>
-    <a href="#">Tech</a>
-    <a href="#">Sports</a>
-    <a href="#">Culture</a>
-  </nav>
-
-  <div class="container">
-
-    <section class="headline">
-      <h2>Breaking: Historic Agreement Signed Today</h2>
-      <p>The government has signed a groundbreaking agreement expected to improve international cooperation and trade. Full details to follow.</p>
-    </section>
-
-    <section class="news-grid">
-      <div class="news-card">
-        <img src="https://img9.jpgcom/300x150" alt="">
-        <h3>Latest news</h3>
-        <p>Markets saw a sharp rise today as tech stocks bounced back from a two-week slump.</p>
-      </div>
-      <div class="news-card">
-        <img src="https://via.placeholder.com/300x150" alt="">
-        <h3>Weather news</h3>
-        <p>Tech giant announces its latest flagship phone with upgraded camera and battery life.</p>
-      </div>
-      <div class="news-card">
-        <img src="https://via.placeholder.com/300x150" alt="">
-        <h3>Weekly news</h3>
-        <p>The thrilling final ended with a last-minute goal, crowning the underdogs as champions.</p>
-      </div>
-      
-    </section>
-
-  </div>
-
-  <footer>
-    <p>&copy; 2025 Bloomberg.uz. All rights reserved.</p>
-  </footer>
-
-</body>
-</html>
+{% endblock content %}
