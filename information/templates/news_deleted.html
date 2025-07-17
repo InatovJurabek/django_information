@@ -1,12 +1,20 @@
 {% extends 'base.html' %}
-{% block title %} - Yangilik o'chirildi{% endblock title %}
+{% block title %} - Yangi yangilik qo'shish{% endblock title %}
 
 {% block content %}
-<div class="container mt-5 text-center">
-    <div class="alert alert-success p-4">
-        <h3 class="mb-3">✅ Yangilik muvaffaqiyatli o'chirildi!</h3>
-        <p>Ushbu yangilik tizimdan olib tashlandi.</p>
-        <a href="{% url 'home' %}" class="btn btn-primary mt-3">Bosh sahifaga qaytish</a>
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-lg-8 offset-lg-2">
+      <h2 class="mb-4">Yangi yangilik qo'shish</h2>
+
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ news_form.as_p }}
+        <button type="submit" class="btn btn-primary">Saqlash</button>
+        <a href="{% url 'home' %}" class="btn btn-secondary ms-2">Bekor qilish</a>
+      </form>
+
     </div>
+  </div>
 </div>
 {% endblock content %}

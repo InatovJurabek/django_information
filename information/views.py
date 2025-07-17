@@ -1,58 +1,56 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-
-from information.models import New, Category
-from django.shortcuts import get_object_or_404
+from .models import New, Category
+from .forms import AddNewsForm
 
 
 def news_list_view(request):
     news = New.objects.all()
     categories = Category.objects.all()
-
-    context = {
+    return render(request, 'index.html', {
         'latest_news': news,
         'categories': categories
-    }
-    return render(request, 'index.html', context)
+    })
 
 
 def news_detail_view(request, pk):
     news = get_object_or_404(New, id=pk)
     categories = Category.objects.all()
-    context = {
-        'news': news,
-        'categories': categories,
-    }
+
     if request.method == 'POST':
-        news.category = Category.objects.get(id=request.POST.get('category'))
-        news.title = request.POST.get('title')
-        if request.FILES.get('image'):
-            news.image = request.FILES.get('image')
-        news.content = request.POST.get('content')
-        news.save()
-    return render(request, 'news_detail.html', context)
+        form = AddNewsForm(request.POST, request.FILES, instance=news)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('news_detail', kwargs={'pk': pk}))
+    else:
+        form = AddNewsForm(instance=news)
+
+    return render(request, 'news_detail.html', {
+        'news': news,
+        'form': form,
+        'categories': categories,
+    })
 
 
 def add_news_view(request):
-    if request.method == 'GET':
-        categories = Category.objects.all()
-        data = {
-            'categories': categories
-        }
-        return render(request, 'add_news.html', data)
-    elif request.method == 'POST':
-        category = Category.objects.get(id=request.POST.get('category'))
-        title = request.POST.get('title')
-        image = request.FILES.get('image')
-        content = request.POST.get('content')
-        news = New.objects.create(title=title,
-                                  category=category,
-                                  image=image,
-                                  content=content)
-        return redirect(reverse('news_detail', kwargs={'pk': news.id}))
+    if request.method == 'POST':
+        form = AddNewsForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('home'))
+    else:
+        form = AddNewsForm()
+
+    categories = Category.objects.all()
+    return render(request, 'add_news.html', {
+        'news_form': form,
+        'categories': categories,
+    })
 
 
 def delete_news_view(request, pk):
-    news = New.objects.get(id=pk)
-    news.delete()
-    return render(request, 'news_deleted.html')
+    news = get_object_or_404(New, id=pk)
+    if request.method == 'POST':
+        news.delete()
+        return redirect(reverse('home'))
+    return render(request, 'news_delete_confirm.html', {'news': news})
